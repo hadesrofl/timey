@@ -38,14 +38,14 @@ import utils.SQLviaSSH.ConnectorToSQL;
 public class start {
 
 	public static void main(String[] args) {
-		String rhost = "";
-		int rport = 3306;
-		int lport = 5555;
-		String dbUser = "";
-		String dbPassword = "";
-		String sshUser = "";
-		String sshPassword = "";
-		String dbName = "";
+		String rhost = args[0];
+		int rport = Integer.parseInt(args[1]);
+		int lport = Integer.parseInt(args[2]);
+		String dbUser = args[3];
+		String dbPassword = args[4];
+		String sshUser = args[5];
+		String sshPassword = args[6];
+		String dbName = args[7];
 
 		ConnectorToSQL sql = new ConnectorToSQL(rhost, rport, lport, sshUser,
 				sshPassword, dbUser, dbPassword, dbName);

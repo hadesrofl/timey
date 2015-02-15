@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.BorderPane?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="519.0" prefWidth="707.0" stylesheets="@../../../../style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="timey.controller.view.DateViewController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="707.0" stylesheets="@../../../../style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="timey.controller.view.DateViewController">
    <children>
       <TableView fx:id="dateTable" layoutY="26.0" prefHeight="253.0" prefWidth="297.0">
         <columns>
@@ -55,9 +55,10 @@
          </children>
       </GridPane>
       <PieChart fx:id="pie" layoutX="455.0" layoutY="277.0" prefHeight="242.0" prefWidth="251.0" title="Timeshares" />
-      <Button layoutX="533.0" layoutY="247.0" mnemonicParsing="false" text="New Time" />
-      <Button layoutX="611.0" layoutY="247.0" mnemonicParsing="false" text="Edit Time" />
-      <Button layoutX="377.0" layoutY="247.0" mnemonicParsing="false" text="Add Event" />
-      <Button layoutX="458.0" layoutY="247.0" mnemonicParsing="false" text="Edit Date" />
+      <Button layoutX="420.0" layoutY="248.0" mnemonicParsing="false" onAction="#handleNewTime" text="New Time" />
+      <Button layoutX="507.0" layoutY="248.0" mnemonicParsing="false" onAction="#handleEditTime" text="Edit Time" />
+      <Button layoutX="334.0" layoutY="248.0" mnemonicParsing="false" onAction="#handleEditDate" text="Edit Date" />
+      <Button layoutX="590.0" layoutY="248.0" mnemonicParsing="false" onAction="#handleRemoveTime" text="Remove Time" />
+      <Label fx:id="caption" layoutX="467.0" layoutY="286.0" />
    </children>
 </Pane>

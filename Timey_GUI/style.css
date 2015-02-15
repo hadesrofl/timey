@@ -1,0 +1,34 @@
+#rootLayout {
+-fx-background-color: #FBF6B4;
+-fx-font-family: "Comic Sans MS";
+}
+
+
+.table-view {
+-fx-background-color: #FBF6B4;
+-fx-border-color: #000000;
+}
+
+.chart {
+-fx-background-color: #FBF6B4;
+-fx-border-color: #000000;
+}
+
+.label {
+
+}
+
+.button {
+    -fx-background-color: 
+	#efefef,
+        linear-gradient(#d6d6d6 50%, white 100%),
+        radial-gradient(center 50% -40%, radius 200%, #fff9e1 45%, #fff9e1 50%);
+    -fx-background-radius: 30;
+    -fx-background-insets: 0,1,1;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 3, 0.0 , 0 , 1 );
+}
+
+.menu-bar {
+-fx-background-color: #AAFF8B;
+-fx-border-color: #000000;
+}

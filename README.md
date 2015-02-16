@@ -9,15 +9,20 @@ This is my TimeTracker-App. It's primary purpose was to track my Time at my univ
 =======
 ## Features
 
-![alt text](http://kerberos-grube.de/img/TimeY-Mindmap.png "Project Mindmap")
+![Project MindMap](http://kerberos-grube.de/img/TimeY-WimeY-Mindmap.png)
 
 ## Roadmap
 
+### Next Steps:
+
 * Adding feature to analyze Total Time used on specific categories per period
 * Using a GUI written with JavaFX
-* Creating Charts for that Analyze
-* In the Future: Android app
-* In the Future: Web based
 
-## Todo
->>>>>>>
+### Steps in the Future:
+
+* Switching between Localhost / Remotehost
+* Saving Data per database or XML
+* CSV export
+* Multi-User Support
+* Android app
+* Web based

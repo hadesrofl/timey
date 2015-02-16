@@ -9,7 +9,7 @@ This is my TimeTracker-App. It's primary purpose was to track my Time at my univ
 =======
 ## Features
 
-![alt text](http://kerberos-grube.de/img/TimeY-Mindmap.png "Project Mindmap")
+
 
 ## Roadmap
 

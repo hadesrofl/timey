@@ -100,11 +100,18 @@ public class TimeEditDialogController {
 				& endTimeField.getCharacters().length() == 5) {
 			String[] startTime = startTimeField.getText().split(":");
 			String[] endTime = endTimeField.getText().split(":");
-			double totalTime = Math
-					.round(100 * ((Double.parseDouble(endTime[0]) - Double
-							.parseDouble(startTime[0])) * 60 + (Double
-							.parseDouble(endTime[1]) - Double
-							.parseDouble(startTime[1]))) / 60);
+			double startHour = Double.parseDouble(startTime[0]);
+			double startMinutes = Double.parseDouble(startTime[1]);
+			double endHour = Double.parseDouble(endTime[0]);
+			double endMinutes = Double.parseDouble(endTime[1]);
+			double diffHours = 0;
+			if(endHour < startHour){
+				diffHours = (24 - startHour) + endHour;
+			}else{
+				diffHours = endHour - startHour;
+			}
+			double diffMinutes = endMinutes - startMinutes;
+			double totalTime = Math.round(100*((diffHours * 60) + diffMinutes) / 60);
 			totalTime = totalTime / 100;
 			totalTimeLabel.setText(String.valueOf(totalTime));
 		} else {

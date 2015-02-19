@@ -198,6 +198,21 @@ public class DateViewController {
 	}
 
 	@FXML
+	private void handleNewCategory() {
+		mainApp.showCategoryEditDialog(true);
+	}
+
+	@FXML
+	private void handleEditCategory() {
+		mainApp.showCategoryEditDialog(false);
+	}
+	
+	@FXML
+	private void handleRemoveCategory(){
+		mainApp.showCategoryRemoveDialog();
+	}
+
+	@FXML
 	private void handleRemoveTime() {
 		Date selectedDate = dateTable.getSelectionModel().getSelectedItem();
 		Time selectedTime = timeTable.getSelectionModel().getSelectedItem();

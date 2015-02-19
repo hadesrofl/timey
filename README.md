@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Welcome
 
 This is my TimeTracker-App. It's primary purpose was to track my Time at my university, but also being flexible with other categories. A second Goal was to train some software development skills like using new techniques (javaFX, Android) or even simple problems you have while programming some things. First of all there was the development decisions and thoughts about:
@@ -26,3 +27,33 @@ This is my TimeTracker-App. It's primary purpose was to track my Time at my univ
 * Multi-User Support
 * Android app
 * Web based
+=======
+# Welcome
+
+This is my TimeTracker-App. It's primary purpose was to track my Time at my university, but also being flexible with other categories. A second Goal was to train some software development skills like using new techniques (javaFX, Android) or even simple problems you have while programming some things. First of all there was the development decisions and thoughts about:
+
+* What should the app do?
+* How is its structure?`
+* etc. etc.
+
+=======
+## Features
+
+![alt text](http://kerberos-grube.de/img/TimeY-Mindmap.png "Project Mindmap")
+
+## Roadmap
+
+### Next Steps:
+
+* Adding feature to analyze Total Time used on specific categories per period
+* Using a GUI written with JavaFX
+
+### Steps in the Future:
+
+* Switching between Localhost / Remotehost
+* Saving Data per database or XML
+* CSV export
+* Multi-User Support
+* Android app
+* Web based
+>>>>>>> 2b0687aeba36de943710c323eec98375ba3518f7

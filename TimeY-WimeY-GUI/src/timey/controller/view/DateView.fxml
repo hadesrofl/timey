@@ -60,8 +60,8 @@
       <Button layoutX="400.0" layoutY="115.0" mnemonicParsing="false" onAction="#handleEditDate" text="Edit Date" />
       <Button layoutX="411.0" layoutY="291.0" mnemonicParsing="false" onAction="#handleRemoveTime" text="Remove Time" />
       <Label fx:id="caption" layoutX="467.0" layoutY="286.0" />
-      <Button layoutX="565.0" layoutY="248.0" mnemonicParsing="false" text="New Category" />
-      <Button layoutX="567.0" layoutY="291.0" mnemonicParsing="false" text="Edit Category" />
-      <Button layoutX="669.0" layoutY="291.0" mnemonicParsing="false" text="Remote Category" />
+      <Button layoutX="565.0" layoutY="248.0" mnemonicParsing="false" onAction="#handleNewCategory" text="New Category" />
+      <Button layoutX="567.0" layoutY="291.0" mnemonicParsing="false" onAction="#handleEditCategory" text="Edit Category" />
+      <Button layoutX="669.0" layoutY="291.0" mnemonicParsing="false" onAction="#handleRemoveCategory" text="Remote Category" />
    </children>
 </Pane>

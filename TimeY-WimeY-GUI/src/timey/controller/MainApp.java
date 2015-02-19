@@ -1,9 +1,6 @@
 package timey.controller;
 
 import java.io.IOException;
-import java.sql.SQLException;
-import java.time.LocalTime;
-
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,6 +13,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import timey.controller.model.Date;
 import timey.controller.model.Time;
+import timey.controller.view.CategoryEditDialogController;
+import timey.controller.view.CategoryRemoveDialogController;
 import timey.controller.view.DateViewController;
 import timey.controller.view.DateEditDialogController;
 import timey.controller.view.TimeEditDialogController;
@@ -28,22 +27,22 @@ public class MainApp extends Application {
 	private static DatabaseConnection dbConn;
 
 	public MainApp() {
-		
+
 		dates = dbConn.getDates(20150210, 20150310);
-//		Date d1 = new Date(20150210, 10, 2, 8, 2015, "Dienstag", "Februar",
-//				false, false, null);
-//		d1.addTime(new Time(d1.getCompleteDate(), LocalTime.of(10, 00),
-//				LocalTime.of(12, 00), 2.0, "Arbeiten", "FHL Stuff", 20150210));
-//		d1.addTime(new Time(d1.getCompleteDate(), LocalTime.of(13, 00),
-//				LocalTime.of(15, 00), 2.0, "Zocken", "LoL", 20150210));
-//		d1.addTime(new Time(d1.getCompleteDate(), LocalTime.of(16, 00),
-//				LocalTime.of(18, 00), 2.0, "Arbeiten", "FHL Stuff", 20150210));
-//		dates.add(d1);
-//		Date d2 = new Date(20150211, 11, 2, 8, 2015, "Mittwoch", "Februar",
-//				false, false, null);
-//		d2.addTime(new Time(d1.getCompleteDate(), LocalTime.of(8, 00),
-//				LocalTime.of(16, 00), 8.0, "Arbeiten", "FHL Stuff", 20150211));
-//		dates.add(d2);
+		// Date d1 = new Date(20150210, 10, 2, 8, 2015, "Dienstag", "Februar",
+		// false, false, null);
+		// d1.addTime(new Time(d1.getCompleteDate(), LocalTime.of(10, 00),
+		// LocalTime.of(12, 00), 2.0, "Arbeiten", "FHL Stuff", 20150210));
+		// d1.addTime(new Time(d1.getCompleteDate(), LocalTime.of(13, 00),
+		// LocalTime.of(15, 00), 2.0, "Zocken", "LoL", 20150210));
+		// d1.addTime(new Time(d1.getCompleteDate(), LocalTime.of(16, 00),
+		// LocalTime.of(18, 00), 2.0, "Arbeiten", "FHL Stuff", 20150210));
+		// dates.add(d1);
+		// Date d2 = new Date(20150211, 11, 2, 8, 2015, "Mittwoch", "Februar",
+		// false, false, null);
+		// d2.addTime(new Time(d1.getCompleteDate(), LocalTime.of(8, 00),
+		// LocalTime.of(16, 00), 8.0, "Arbeiten", "FHL Stuff", 20150211));
+		// dates.add(d2);
 	}
 
 	public void start(Stage primaryStage) {
@@ -55,9 +54,9 @@ public class MainApp extends Application {
 	}
 
 	public static void main(String[] args) {
-		dbConn = new DatabaseConnection(args[0],
-				Integer.parseInt(args[1]), Integer.parseInt(args[2]), args[3],
-				args[4], args[5], args[6], args[7]);
+		dbConn = new DatabaseConnection(args[0], Integer.parseInt(args[1]),
+				Integer.parseInt(args[2]), args[3], args[4], args[5], args[6],
+				args[7]);
 		launch(args);
 		dbConn.getConn().stop();
 	}
@@ -159,6 +158,73 @@ public class MainApp extends Application {
 
 	}
 
+	public boolean showCategoryEditDialog(boolean newCategory) {
+		try {
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(MainApp.class
+					.getResource("view/CategoryEditDialog.fxml"));
+			AnchorPane page = (AnchorPane) loader.load();
+
+			// Create DiagloStage
+			Stage dialogStage = new Stage();
+			if (newCategory) {
+				dialogStage.setTitle("New Category");
+			} else {
+				dialogStage.setTitle("Edit Category");
+			}
+			dialogStage.initModality(Modality.WINDOW_MODAL);
+			dialogStage.initOwner(primaryStage);
+			Scene scene = new Scene(page);
+			dialogStage.setScene(scene);
+
+			// Set the date into the controller
+			CategoryEditDialogController controller = loader.getController();
+			controller.setDialogStage(dialogStage);
+			controller.setNewDialog(newCategory);
+
+			// Show dialog and wait until user closes it
+			dialogStage.showAndWait();
+
+			return controller.isOkClicked();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+
+	}
+
+	public boolean showCategoryRemoveDialog() {
+		try {
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(MainApp.class
+					.getResource("view/CategoryRemoveDialog.fxml"));
+			AnchorPane page = (AnchorPane) loader.load();
+
+			// Create DiagloStage
+			Stage dialogStage = new Stage();
+			dialogStage.setTitle("Remove Category");
+			dialogStage.initModality(Modality.WINDOW_MODAL);
+			dialogStage.initOwner(primaryStage);
+			Scene scene = new Scene(page);
+			dialogStage.setScene(scene);
+
+			// Set the date into the controller
+			CategoryRemoveDialogController controller = loader.getController();
+			controller.setDialogStage(dialogStage);
+
+			// Show dialog and wait until user closes it
+			dialogStage.showAndWait();
+
+			return controller.isRemoveClicked();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+
+	}
+
 	public Stage getPrimaryStage() {
 		return primaryStage;
 	}
@@ -166,7 +232,8 @@ public class MainApp extends Application {
 	public ObservableList<Date> getDates() {
 		return dates;
 	}
-	public DatabaseConnection getDBConn(){
+
+	public DatabaseConnection getDBConn() {
 		return dbConn;
 	}
 }

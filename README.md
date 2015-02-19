@@ -26,4 +26,3 @@ This is my TimeTracker-App. It's primary purpose was to track my Time at my univ
 * Multi-User Support
 * Android app
 * Web based
-=======

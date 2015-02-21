@@ -84,7 +84,7 @@ public class TimeEditDialogController {
 		return okClicked;
 	}
 	
-	public boolean somethingIsChanged(){
+	public boolean isSomethingChanged(){
 		return changed;
 	}
 

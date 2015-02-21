@@ -48,7 +48,7 @@ public class CategoryEditDialogController {
 	public boolean isOkClicked() {
 		return okClicked;
 	}
-	public boolean somethingIsChanged(){
+	public boolean isSomethingChanged(){
 		return changed;
 	}
 

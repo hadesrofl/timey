@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS `timey_wimey`.`category` (
   CONSTRAINT `fk_category_user`
     FOREIGN KEY (`user_ref`)
     REFERENCES `timey_wimey`.`user` (`id`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 

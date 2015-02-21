@@ -1,5 +1,9 @@
 package timey.controller.view;
 
+import org.controlsfx.control.action.Action;
+import org.controlsfx.dialog.Dialog;
+import org.controlsfx.dialog.Dialogs;
+
 import timey.controller.MainApp;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -7,6 +11,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.stage.Stage;
 
+@SuppressWarnings("deprecation")
 public class CategoryRemoveDialogController {
 	@FXML
 	private ComboBox<String> categoryCombo;
@@ -40,12 +45,22 @@ public class CategoryRemoveDialogController {
 	@FXML
 	private void handleRemove() {
 		String selected = categoryCombo.getSelectionModel().getSelectedItem();
-		for(int i = 0; i < categoryData.size(); i++){
-			if(selected.compareTo(categoryData.get(i)) == 0){
-				categoryData.remove(i);
-				mainApp.getDBConn().handleRemoveCategory(selected, mainApp.getUserID());
+		Action response = Dialogs.create()
+		        .title("Remove Category: " + selected )
+		        .masthead("You want to delete " + selected + "! All times with that category will be deleted too!")
+		        .message("Are you sure you want to delete " + selected + "?")
+		        .showConfirm();
+
+		if (response == Dialog.ACTION_YES) {
+			for(int i = 0; i < categoryData.size(); i++){
+				if(selected.compareTo(categoryData.get(i)) == 0){
+					categoryData.remove(i);
+					mainApp.getDBConn().handleRemoveCategory(selected, mainApp.getUserID());
+				}
 			}
-		}
+		} 
+
+
 		
 		removeClicked = true;
 		dialogStage.close();

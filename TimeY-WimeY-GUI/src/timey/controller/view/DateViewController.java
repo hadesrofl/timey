@@ -147,8 +147,9 @@ public class DateViewController {
 	private void handleEditDate() {
 		Date selectedDate = dateTable.getSelectionModel().getSelectedItem();
 		if (selectedDate != null) {
-			boolean okClicked = mainApp.showDateEditDialog(selectedDate);
-			if (okClicked) {
+			boolean changed = mainApp.showDateEditDialog(selectedDate);
+			if (changed) {
+				handleRefresh();
 				showDateDetails(selectedDate);
 			}
 
@@ -252,6 +253,7 @@ public class DateViewController {
 	@FXML
 	private void handleRemoveCategory() {
 		mainApp.showCategoryRemoveDialog();
+		handleRefresh();
 	}
 
 	@FXML

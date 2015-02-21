@@ -209,7 +209,8 @@ public class DatabaseConnection {
 				statInsert.setInt(7, categoryID);
 				updated = statInsert.execute();
 				int updates = statInsert.getUpdateCount();
-				if(updates >= 1) updated = true;
+				if (updates >= 1)
+					updated = true;
 			} catch (SQLException e) {
 				Dialogs.create()
 						.title("Edit Time")
@@ -234,7 +235,8 @@ public class DatabaseConnection {
 				statUpdate.setInt(5, categoryID);
 				statUpdate.setInt(6, time.getTimeID());
 				int updates = statUpdate.executeUpdate();
-				if(updates >= 1) updated = true;
+				if (updates >= 1)
+					updated = true;
 			} catch (SQLException e) {
 				Dialogs.create()
 						.title("Edit Time")
@@ -247,28 +249,33 @@ public class DatabaseConnection {
 		}
 		return updated;
 	}
-	public void handleRemoveCategory(String selected, int userID){
+
+	public void handleRemoveCategory(String selected, int userID) {
 		String deleteQuery = "DELETE FROM category WHERE name = ? AND user_ref = ?";
 		try {
-			PreparedStatement stat = sql.getConn().prepareStatement(deleteQuery);
-		stat.setString(1, selected);
-		stat.setInt(2, userID);
-		stat.execute();
+			PreparedStatement stat = sql.getConn()
+					.prepareStatement(deleteQuery);
+			stat.setString(1, selected);
+			stat.setInt(2, userID);
+			stat.execute();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	public boolean handleEditCategory(String newCategoryName, int userID, String oldCategoryName){
+
+	public boolean handleEditCategory(String newCategoryName, int userID,
+			String oldCategoryName) {
 		boolean updated = false;
 		try {
 			String categoryUpdate = "UPDATE category SET name = ? WHERE user_ref = ? AND name = ?;";
-			PreparedStatement stat = sql.getConn().prepareStatement(categoryUpdate);
+			PreparedStatement stat = sql.getConn().prepareStatement(
+					categoryUpdate);
 			stat.setString(1, newCategoryName);
 			stat.setInt(2, userID);
 			stat.setString(3, oldCategoryName);
 			int changed = stat.executeUpdate();
-			if(changed == 1){
+			if (changed == 1) {
 				updated = true;
 			}
 		} catch (SQLException e) {
@@ -277,8 +284,8 @@ public class DatabaseConnection {
 		}
 		return updated;
 	}
-	
-	public void handleNewCategory(String categoryName, int userID){
+
+	public void handleNewCategory(String categoryName, int userID) {
 		try {
 			String categoryInsert = "INSERT INTO category (name, user_ref) VALUES (?, ?);";
 			PreparedStatement stat;
@@ -290,5 +297,38 @@ public class DatabaseConnection {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	public boolean handleEditDate(String holidayFlag, String event, int userID, int calendarID){
+		boolean updated = false;
+		try{
+			String update = "UPDATE user_calendar SET holiday_flag = ? , event = ? WHERE user_ref = ? AND calendar_dimension_ref = ?";
+			PreparedStatement stat = sql.getConn().prepareStatement(update);
+			stat.setString(1, holidayFlag);
+			stat.setString(2, event);
+			stat.setInt(3, userID);
+			stat.setInt(4, calendarID);
+			int updates = stat.executeUpdate();
+			if(updates >= 1) updated = true;
+		}catch(SQLException e){
+			e.getStackTrace();
+		}
+		return updated;
+	}
+
+	public int getUserID(String dbuserName) {
+		int userID = 0;
+		try {
+			String selectQuery = "SELECT * FROM user WHERE name = ?";
+			PreparedStatement stat = sql.getConn()
+					.prepareStatement(selectQuery);
+			stat.setString(1, dbuserName);
+			ResultSet result = stat.executeQuery();
+			while (result.next()) {
+				userID = result.getInt("id");
+			}
+		} catch (SQLException e) {
+
+		}
+		return userID;
 	}
 }

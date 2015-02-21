@@ -1,8 +1,10 @@
 package timey.controller;
 
 import java.io.IOException;
+import java.time.LocalDate;
+
 import javafx.application.Application;
-import javafx.collections.FXCollections;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -23,26 +25,11 @@ import timey.controller.model.DatabaseConnection;
 public class MainApp extends Application {
 	private Stage primaryStage;
 	private BorderPane rootLayout;
-	private ObservableList<Date> dates = FXCollections.observableArrayList();
 	private static DatabaseConnection dbConn;
+	private int userID = 1;
 
 	public MainApp() {
 
-		dates = dbConn.getDates(20150210, 20150310);
-		// Date d1 = new Date(20150210, 10, 2, 8, 2015, "Dienstag", "Februar",
-		// false, false, null);
-		// d1.addTime(new Time(d1.getCompleteDate(), LocalTime.of(10, 00),
-		// LocalTime.of(12, 00), 2.0, "Arbeiten", "FHL Stuff", 20150210));
-		// d1.addTime(new Time(d1.getCompleteDate(), LocalTime.of(13, 00),
-		// LocalTime.of(15, 00), 2.0, "Zocken", "LoL", 20150210));
-		// d1.addTime(new Time(d1.getCompleteDate(), LocalTime.of(16, 00),
-		// LocalTime.of(18, 00), 2.0, "Arbeiten", "FHL Stuff", 20150210));
-		// dates.add(d1);
-		// Date d2 = new Date(20150211, 11, 2, 8, 2015, "Mittwoch", "Februar",
-		// false, false, null);
-		// d2.addTime(new Time(d1.getCompleteDate(), LocalTime.of(8, 00),
-		// LocalTime.of(16, 00), 8.0, "Arbeiten", "FHL Stuff", 20150211));
-		// dates.add(d2);
 	}
 
 	public void start(Stage primaryStage) {
@@ -50,7 +37,7 @@ public class MainApp extends Application {
 		this.primaryStage.setTitle("TimeY");
 
 		initRootLayout();
-		showDateView();
+		showDateView(null, null, 0);
 	}
 
 	public static void main(String[] args) {
@@ -78,20 +65,26 @@ public class MainApp extends Application {
 		}
 	}
 
-	public void showDateView() {
+	public void showDateView(LocalDate toPickerValue, LocalDate fromPickerValue, int selectIndex) {
 		try {
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(MainApp.class.getResource("view/DateView.fxml"));
-			Pane DateView;
-			DateView = (Pane) loader.load();
+			Pane DateView = (Pane) loader.load();
 			rootLayout.setCenter(DateView);
-
+			
 			DateViewController controller = loader.getController();
 			controller.setMainApp(this);
+			controller.setDatePicker(toPickerValue, fromPickerValue);
+			controller.setSelectionIndexDateTable(selectIndex);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public void refreshDateView(LocalDate toPickerValue, LocalDate fromPickerValue, int selectIndex){
+		showDateView(toPickerValue, fromPickerValue, selectIndex);
+		
 	}
 
 	public boolean showDateEditDialog(Date date) {
@@ -144,12 +137,13 @@ public class MainApp extends Application {
 			// Set the date into the controller
 			TimeEditDialogController controller = loader.getController();
 			controller.setDialogStage(dialogStage);
+			controller.setMainApp(this);
 			controller.setDate(date, time);
 
 			// Show dialog and wait until user closes it
 			dialogStage.showAndWait();
 
-			return controller.isOkClicked();
+			return controller.somethingIsChanged();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -180,12 +174,14 @@ public class MainApp extends Application {
 			// Set the date into the controller
 			CategoryEditDialogController controller = loader.getController();
 			controller.setDialogStage(dialogStage);
+			controller.setMainApp(this);
 			controller.setNewDialog(newCategory);
+			controller.setData();
 
 			// Show dialog and wait until user closes it
 			dialogStage.showAndWait();
 
-			return controller.isOkClicked();
+			return controller.somethingIsChanged();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -212,6 +208,8 @@ public class MainApp extends Application {
 			// Set the date into the controller
 			CategoryRemoveDialogController controller = loader.getController();
 			controller.setDialogStage(dialogStage);
+			controller.setMainApp(this);
+			controller.setData();
 
 			// Show dialog and wait until user closes it
 			dialogStage.showAndWait();
@@ -224,16 +222,22 @@ public class MainApp extends Application {
 		}
 
 	}
+	
+
 
 	public Stage getPrimaryStage() {
 		return primaryStage;
 	}
 
-	public ObservableList<Date> getDates() {
-		return dates;
+	public ObservableList<Date> getDates(String id1, String id2, int userID) {
+		return dbConn.getDates(id1, id2, userID);
 	}
 
 	public DatabaseConnection getDBConn() {
 		return dbConn;
+	}
+	
+	public int getUserID(){
+		return userID;
 	}
 }

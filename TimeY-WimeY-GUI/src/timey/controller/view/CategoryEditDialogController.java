@@ -1,5 +1,6 @@
 package timey.controller.view;
 
+import timey.controller.MainApp;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -14,21 +15,29 @@ public class CategoryEditDialogController {
 	private ComboBox<String> categoryCombo;
 	private Stage dialogStage;
 	private boolean okClicked = false;
-	// TODO: Remove for prepared Statements
+	private boolean changed = false;
+	private MainApp mainApp;
 	private ObservableList<String> categoryData = FXCollections
 			.observableArrayList();
 
 	@FXML
 	private void initialize() {
-		// TODO: Remove for prepared Statements
-		categoryData.add("Freizeit");
-		categoryData.add("Studium");
+
 	}
 
 	public void setNewDialog(boolean newCategory) {
 		if (newCategory) {
 			categoryCombo.setVisible(false);
 		}
+
+	}
+	
+	public void setMainApp(MainApp main){
+		this.mainApp = main;
+	}
+	
+	public void setData(){
+		categoryData = mainApp.getDBConn().getCategories(mainApp.getUserID());
 		categoryCombo.setItems(categoryData);
 	}
 
@@ -39,26 +48,30 @@ public class CategoryEditDialogController {
 	public boolean isOkClicked() {
 		return okClicked;
 	}
+	public boolean somethingIsChanged(){
+		return changed;
+	}
 
 	@FXML
 	private void handleOK() {
+
 		if (categoryCombo.isVisible()) {
 			String selected = categoryCombo.getSelectionModel()
 					.getSelectedItem();
 			for (int i = 0; i < categoryData.size(); i++) {
 				if (selected.compareTo(categoryData.get(i)) == 0) {
+					
 					categoryData.set(i, categoryField.getText());
+					changed = mainApp.getDBConn().handleEditCategory(categoryField.getText(), mainApp.getUserID(), selected);
 				}
 			}
-			System.out.println("Category edited! (" + categoryField.getText()
-					+ ")");
 		} else if (categoryField.getText().compareTo("") != 0
 				& categoryField.getText() != null) {
 			categoryData.add(categoryField.getText());
-			System.out.println("Created new Category! ("
-					+ categoryField.getText() + ")");
+			mainApp.getDBConn().handleNewCategory(categoryField.getText(), mainApp.getUserID());
+
 		}
-		okClicked = true;
+		
 		dialogStage.close();
 	}
 

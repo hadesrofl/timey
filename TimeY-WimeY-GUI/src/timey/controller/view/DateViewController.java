@@ -1,5 +1,6 @@
 package timey.controller.view;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,10 +50,6 @@ public class DateViewController {
 	private TableColumn<Time, String> noteColumn;
 
 	@FXML
-	private DatePicker from;
-	@FXML
-	private DatePicker to;
-	@FXML
 	private Label dateLabel;
 	@FXML
 	private Label dayLabel;
@@ -64,6 +61,10 @@ public class DateViewController {
 	private PieChart pie;
 	@FXML
 	private Label caption;
+	@FXML
+	private DatePicker toPicker;
+	@FXML
+	private DatePicker fromPicker;
 	private MainApp mainApp;
 
 	public DateViewController() {
@@ -98,7 +99,7 @@ public class DateViewController {
 		// Clear Date Details
 		showDateDetails(null);
 
-		// Listen for selection changes and show the person details when changed
+		// Listen for selection changes and show the details when changed
 		dateTable
 				.getSelectionModel()
 				.selectedItemProperty()
@@ -120,7 +121,6 @@ public class DateViewController {
 
 	public void setMainApp(MainApp mainApp) {
 		this.mainApp = mainApp;
-		this.dateTable.setItems(mainApp.getDates());
 	}
 
 	private void showDateDetails(Date date) {
@@ -165,9 +165,10 @@ public class DateViewController {
 	private void handleNewTime() {
 		Date selectedDate = dateTable.getSelectionModel().getSelectedItem();
 		if (selectedDate != null) {
-			boolean okClicked = mainApp.showTimeEditDialog(selectedDate, null);
-			if (okClicked) {
-				showDateDetails(selectedDate);
+			boolean changed = mainApp.showTimeEditDialog(selectedDate, null);
+			if (changed) {
+				handleRefresh();
+//				showDateDetails(selectedDate);
 			}
 
 		} else {
@@ -183,10 +184,11 @@ public class DateViewController {
 		Date selectedDate = dateTable.getSelectionModel().getSelectedItem();
 		Time selectedTime = timeTable.getSelectionModel().getSelectedItem();
 		if (selectedDate != null & selectedTime != null) {
-			boolean okClicked = mainApp.showTimeEditDialog(selectedDate,
+			boolean changed = mainApp.showTimeEditDialog(selectedDate,
 					selectedTime);
-			if (okClicked) {
-				showDateDetails(selectedDate);
+			if (changed) {
+				handleRefresh();
+//				showDateDetails(selectedDate);
 			}
 
 		} else {
@@ -198,17 +200,57 @@ public class DateViewController {
 	}
 
 	@FXML
+	private void handleRefresh(){
+		mainApp.refreshDateView(toPicker.getValue(), fromPicker.getValue(),	dateTable.getSelectionModel().getFocusedIndex());
+
+	}
+	public void setDatePicker(LocalDate toPickerValue, LocalDate fromPickerValue){
+		this.toPicker.setValue(toPickerValue);
+		this.fromPicker.setValue(fromPickerValue);
+	}
+	public void setSelectionIndexDateTable(int selectIndex){
+		dateTable.getSelectionModel().selectIndices(selectIndex);
+	}
+	
+	@FXML
+	private void handleDatePicker() {
+		String idFrom = "";
+		String idTo = "";
+		if(fromPicker.getValue() != null){
+			String fromYear = fromPicker.getValue().getYear() + "";
+			String fromMonth = fromPicker.getValue().getMonthValue() + "";
+			if(Integer.parseInt(fromMonth) < 10) fromMonth = 0 + fromMonth;
+			String fromDay = fromPicker.getValue().getDayOfMonth() + "";
+			if(Integer.parseInt(fromDay) < 10) fromDay = 0 + fromDay;
+			idFrom = fromYear + fromMonth + fromDay;
+		}
+		
+		if(toPicker.getValue() != null){
+			String toYear = toPicker.getValue().getYear() + "";
+			String toMonth = toPicker.getValue().getMonthValue() + "";
+			if(Integer.parseInt(toMonth) < 10) toMonth = 0 + toMonth;
+			String toDay = toPicker.getValue().getDayOfMonth() + "";
+			if(Integer.parseInt(toDay) < 10) toDay = 0 + toDay;
+			idTo = toYear + toMonth + toDay;
+			
+		}
+		this.dateTable.setItems(mainApp.getDates(idFrom, idTo, 1));
+	}
+
+	@FXML
 	private void handleNewCategory() {
-		mainApp.showCategoryEditDialog(true);
+		if(mainApp.showCategoryEditDialog(true) == true){
+			handleRefresh();
+		};
 	}
 
 	@FXML
 	private void handleEditCategory() {
 		mainApp.showCategoryEditDialog(false);
 	}
-	
+
 	@FXML
-	private void handleRemoveCategory(){
+	private void handleRemoveCategory() {
 		mainApp.showCategoryRemoveDialog();
 	}
 
@@ -222,6 +264,10 @@ public class DateViewController {
 					selectedDate.getTimes().remove(i);
 				}
 			}
+			mainApp.getDBConn().handleRemoveTime(mainApp.getUserID(), selectedTime);
+			handleRefresh();
+			
+
 		} else {
 			// Nothing selected.
 			Dialogs.create().title("No Selection").masthead("No Data Selected")

@@ -19,9 +19,10 @@ public class Time {
 	private final StringProperty category;
 	private final StringProperty note;
 	private final IntegerProperty calendarID;
+	private final IntegerProperty timeID;
 
 	public Time(String date, LocalTime startTime, LocalTime endTime, double totalTime,
-			String category, String note, int calendarID) {
+			String category, String note, int calendarID, int timeID) {
 		this.date = new SimpleStringProperty(date);
 		this.startTime = new SimpleObjectProperty<LocalTime>(startTime);
 		this.endTime = new SimpleObjectProperty<LocalTime>(endTime);
@@ -29,6 +30,7 @@ public class Time {
 		this.category = new SimpleStringProperty(category);
 		this.note = new SimpleStringProperty(note);
 		this.calendarID = new SimpleIntegerProperty(calendarID);
+		this.timeID = new SimpleIntegerProperty(timeID);
 	}
 
 	public String getDate(){
@@ -106,5 +108,13 @@ public class Time {
 
 	public IntegerProperty calendarIDProperty() {
 		return calendarID;
+	}
+	
+	public int getTimeID() {
+		return timeID.get();
+	}
+
+	public IntegerProperty timeIDProperty() {
+		return timeID;
 	}
 }

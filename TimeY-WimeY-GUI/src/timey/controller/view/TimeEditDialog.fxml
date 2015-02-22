@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane id="rootLayout" prefHeight="333.0" prefWidth="301.0" stylesheets="@../../../../style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="timey.controller.view.TimeEditDialogController">
+<AnchorPane id="rootLayout" prefHeight="333.0" prefWidth="301.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="timey.controller.view.TimeEditDialogController">
    <children>
       <GridPane layoutX="23.0" layoutY="14.0" prefHeight="230.0" prefWidth="262.0">
         <columnConstraints>
@@ -32,7 +32,7 @@
             <TextField fx:id="endTimeField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <TextField fx:id="noteField" GridPane.columnIndex="1" GridPane.rowIndex="5" />
             <Label fx:id="totalTimeLabel" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-            <ComboBox fx:id="categoryCombo" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <ComboBox fx:id="categoryCombo" prefWidth="150.0" promptText="Choose Category" GridPane.columnIndex="1" GridPane.rowIndex="4" />
          </children>
       </GridPane>
       <Button layoutX="88.0" layoutY="279.0" mnemonicParsing="false" onAction="#handleOK" text="OK" />

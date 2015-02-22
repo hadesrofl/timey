@@ -11,6 +11,7 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.DatePicker;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -19,11 +20,13 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import timey.controller.model.Date;
 import timey.controller.model.Time;
+import timey.controller.view.AnalyzeCategoryDialogController;
 import timey.controller.view.CategoryEditDialogController;
 import timey.controller.view.CategoryRemoveDialogController;
 import timey.controller.view.DatabaseLoginDialogController;
 import timey.controller.view.DateViewController;
 import timey.controller.view.DateEditDialogController;
+import timey.controller.view.PlanHolidayDialogController;
 import timey.controller.view.ServerLoginDialogController;
 import timey.controller.view.TimeEditDialogController;
 import timey.controller.model.DatabaseConnection;
@@ -108,7 +111,6 @@ public class MainApp extends Application {
 	public void initRootLayout() {
 		try {
 			// Load the RootLayout from fxml file
-			System.out.println(cssScene);
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(MainApp.class
 					.getResource("view/RootLayout.fxml"));
@@ -300,6 +302,78 @@ public class MainApp extends Application {
 		}
 
 	}
+	
+	public boolean showPlanHolidayDialog(LocalDate from, LocalDate to) {
+		try {
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(MainApp.class
+					.getResource("view/PlanHolidayDialog.fxml"));
+			AnchorPane page = (AnchorPane) loader.load();
+
+			// Create DiagloStage
+			Stage dialogStage = new Stage();
+			dialogStage.getStyle().getClass().getResource(cssScene);
+			dialogStage.getIcons().add(new Image(MainApp.class.getResourceAsStream("icon.png")));
+				dialogStage.setTitle("Plan Holidays");
+
+			dialogStage.initModality(Modality.WINDOW_MODAL);
+			dialogStage.initOwner(primaryStage);
+			Scene scene = new Scene(page);
+			scene.getStylesheets().add(cssScene);
+			dialogStage.setScene(scene);
+
+			// Set the date into the controller
+			PlanHolidayDialogController controller = loader.getController();
+			controller.setDialogStage(dialogStage);
+			controller.setMainApp(this);
+			controller.setData(from, to);
+
+			// Show dialog and wait until user closes it
+			dialogStage.showAndWait();
+
+			return controller.isSomethingChanged();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		}
+
+	public boolean showAnalyzeCategoryDialog(LocalDate from, LocalDate to) {
+		try {
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(MainApp.class
+					.getResource("view/AnalyzeCategoryDialog.fxml"));
+			AnchorPane page = (AnchorPane) loader.load();
+
+			// Create DiagloStage
+			Stage dialogStage = new Stage();
+			dialogStage.getStyle().getClass().getResource(cssScene);
+			dialogStage.getIcons().add(new Image(MainApp.class.getResourceAsStream("icon.png")));
+				dialogStage.setTitle("Analyze Category");
+
+			dialogStage.initModality(Modality.WINDOW_MODAL);
+			dialogStage.initOwner(primaryStage);
+			Scene scene = new Scene(page);
+			scene.getStylesheets().add(cssScene);
+			dialogStage.setScene(scene);
+
+			// Set the date into the controller
+			AnalyzeCategoryDialogController controller = loader.getController();
+			controller.setDialogStage(dialogStage);
+			controller.setMainApp(this);
+			controller.setData(from, to);
+
+			// Show dialog and wait until user closes it
+			dialogStage.showAndWait();
+
+			return controller.isSomethingChanged();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		}
 
 	public boolean showServerLoginDialog() {
 		try {
@@ -383,5 +457,17 @@ public class MainApp extends Application {
 
 	public int getUserID() {
 		return userID;
+	}
+	public String createCalendarIDFromDatePicker(DatePicker datePicker){
+		String id = "";
+		if(datePicker.getValue() != null){
+			String year = datePicker.getValue().getYear() + "";
+			String month = datePicker.getValue().getMonthValue() + "";
+			if(Integer.parseInt(month) < 10) month = 0 + month;
+			String day = datePicker.getValue().getDayOfMonth() + "";
+			if(Integer.parseInt(day) < 10) day = 0 + day;
+			id = year + month + day;
+		}
+		return id;
 	}
 }

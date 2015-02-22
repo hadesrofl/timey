@@ -206,8 +206,16 @@ public class DateViewController {
 
 	}
 	public void setDatePicker(LocalDate toPickerValue, LocalDate fromPickerValue){
-		this.toPicker.setValue(toPickerValue);
-		this.fromPicker.setValue(fromPickerValue);
+		if(fromPickerValue != null & toPickerValue != null) {
+			fromPicker.setValue(fromPickerValue);
+			toPicker.setValue(toPickerValue);
+		}else if(fromPickerValue == null & toPickerValue != null){
+			fromPicker.setValue(toPickerValue);
+			toPicker.setValue(toPickerValue);
+		}else if(fromPickerValue != null & toPickerValue == null){
+			fromPicker.setValue(fromPickerValue);
+			toPicker.setValue(fromPickerValue);
+		}
 	}
 	public void setSelectionIndexDateTable(int selectIndex){
 		dateTable.getSelectionModel().selectIndices(selectIndex);
@@ -215,27 +223,9 @@ public class DateViewController {
 	
 	@FXML
 	private void handleDatePicker() {
-		String idFrom = "";
-		String idTo = "";
-		if(fromPicker.getValue() != null){
-			String fromYear = fromPicker.getValue().getYear() + "";
-			String fromMonth = fromPicker.getValue().getMonthValue() + "";
-			if(Integer.parseInt(fromMonth) < 10) fromMonth = 0 + fromMonth;
-			String fromDay = fromPicker.getValue().getDayOfMonth() + "";
-			if(Integer.parseInt(fromDay) < 10) fromDay = 0 + fromDay;
-			idFrom = fromYear + fromMonth + fromDay;
-		}
-		
-		if(toPicker.getValue() != null){
-			String toYear = toPicker.getValue().getYear() + "";
-			String toMonth = toPicker.getValue().getMonthValue() + "";
-			if(Integer.parseInt(toMonth) < 10) toMonth = 0 + toMonth;
-			String toDay = toPicker.getValue().getDayOfMonth() + "";
-			if(Integer.parseInt(toDay) < 10) toDay = 0 + toDay;
-			idTo = toYear + toMonth + toDay;
-			
-		}
-		this.dateTable.setItems(mainApp.getDates(idFrom, idTo, 1));
+		String idFrom = mainApp.createCalendarIDFromDatePicker(fromPicker);
+		String idTo = mainApp.createCalendarIDFromDatePicker(toPicker);
+		this.dateTable.setItems(mainApp.getDates(idFrom, idTo, mainApp.getUserID()));
 	}
 
 	@FXML
@@ -254,6 +244,17 @@ public class DateViewController {
 	private void handleRemoveCategory() {
 		mainApp.showCategoryRemoveDialog();
 		handleRefresh();
+	}
+	@FXML
+	private void handlePlanHolidays(){
+		boolean changed = mainApp.showPlanHolidayDialog(fromPicker.getValue(), toPicker.getValue());
+		if(changed == true){
+			handleRefresh();
+		}
+	}
+	@FXML
+	private void handleAnalyzeCategory(){
+		mainApp.showAnalyzeCategoryDialog(fromPicker.getValue(), toPicker.getValue());
 	}
 
 	@FXML

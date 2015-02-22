@@ -23,7 +23,7 @@ public class DatabaseConnection {
 		sql.start();
 	}
 
-	public ObservableList<Date> getDates(String id1, String id2, int userID) {
+	public ObservableList<Date> getDates(String idFrom, String idTo, int userID) {
 		PreparedStatement stat = null;
 		Date date = null;
 		boolean contains = false;
@@ -31,18 +31,21 @@ public class DatabaseConnection {
 
 		try {
 			ResultSet result = null;
-			if (id1.compareTo("") == 0 | id2.compareTo("") == 0) {
-				String show = "SELECT cd.id, cd.day_name, cd.month_name, cd.day, cd.month, cd.year, cd.week, cd.quarter, cd.weekend_flag, uc.event, uc.holiday_flag,  td.id AS time_dimension_id, td.start_time, td.end_time, td.total_time, c.name AS category, td.note FROM user_calendar uc LEFT JOIN time_dimension td on td.user_calendar_calendar_dimension_ref = uc.calendar_dimension_ref LEFT JOIN calendar_dimension cd on cd.id = uc.calendar_dimension_ref LEFT JOIN category c on c.user_ref = uc.user_ref AND td.category_ref = c.id WHERE uc.user_ref = ? AND uc.calendar_dimension_ref >= ?;";
+			if (idFrom.compareTo("") == 0 | idTo.compareTo("") == 0) {
+				String show = "SELECT cd.id, cd.day_name, cd.month_name, cd.day, cd.month, cd.year, cd.week, cd.quarter, cd.weekend_flag, uc.event, uc.holiday_flag,  td.id AS time_dimension_id, td.start_time, td.end_time, td.total_time, c.name AS category, td.note FROM user_calendar uc LEFT JOIN time_dimension td on td.user_calendar_calendar_dimension_ref = uc.calendar_dimension_ref LEFT JOIN calendar_dimension cd on cd.id = uc.calendar_dimension_ref LEFT JOIN category c on c.user_ref = uc.user_ref AND td.category_ref = c.id WHERE uc.user_ref = ? AND uc.calendar_dimension_ref = ?;";
 				stat = sql.getConn().prepareStatement(show);
 				stat.setInt(1, userID);
-				stat.setString(2, id1);
+				if (idFrom.compareTo("") == 0)
+					stat.setString(2, idTo);
+				if (idTo.compareTo("") == 0)
+					stat.setString(2, idFrom);
 				result = stat.executeQuery();
 			} else {
 				String show = "SELECT cd.id, cd.day_name, cd.month_name, cd.day, cd.month, cd.year, cd.week, cd.quarter, cd.weekend_flag, uc.event, uc.holiday_flag, td.id AS time_dimension_id, td.start_time, td.end_time, td.total_time, c.name AS category, td.note FROM user_calendar uc LEFT JOIN time_dimension td on td.user_calendar_calendar_dimension_ref = uc.calendar_dimension_ref LEFT JOIN calendar_dimension cd on cd.id = uc.calendar_dimension_ref LEFT JOIN category c on c.user_ref = uc.user_ref AND td.category_ref = c.id WHERE uc.user_ref = ? AND uc.calendar_dimension_ref >= ? AND uc.calendar_dimension_ref <= ?;";
 				stat = sql.getConn().prepareStatement(show);
 				stat.setInt(1, userID);
-				stat.setString(2, id1);
-				stat.setString(3, id2);
+				stat.setString(2, idFrom);
+				stat.setString(3, idTo);
 				result = stat.executeQuery();
 
 			}
@@ -73,24 +76,8 @@ public class DatabaseConnection {
 				} else {
 					weekend = true;
 				}
-				java.sql.Time startTime = result.getTime("start_time");
-				java.sql.Time endTime = result.getTime("end_time");
-				Double totalTime = result.getDouble("total_time");
-				String category = result.getString("category");
-				String note = result.getString("note");
 				String dateTime = day + "." + month + "." + year;
-				int timeID = result.getInt("time_dimension_id");
-				if (startTime != null | endTime != null) {
-
-					LocalTime startLocalTime = LocalTime.of(
-							startTime.getHours(), startTime.getMinutes());
-					LocalTime endLocalTime = LocalTime.of(endTime.getHours(),
-							endTime.getMinutes());
-					time = new Time(dateTime, startLocalTime, endLocalTime,
-							totalTime, category, note, Integer.parseInt(id),
-							timeID);
-				}
-
+				time = getTime(result, dateTime, id);
 				for (int i = 0; i < dates.size(); i++) {
 					if (Integer.parseInt(id) == dates.get(i).getCalendarID()) {
 						contains = true;
@@ -298,9 +285,11 @@ public class DatabaseConnection {
 			e.printStackTrace();
 		}
 	}
-	public boolean handleEditDate(String holidayFlag, String event, int userID, int calendarID){
+
+	public boolean handleEditDate(String holidayFlag, String event, int userID,
+			int calendarID) {
 		boolean updated = false;
-		try{
+		try {
 			String update = "UPDATE user_calendar SET holiday_flag = ? , event = ? WHERE user_ref = ? AND calendar_dimension_ref = ?";
 			PreparedStatement stat = sql.getConn().prepareStatement(update);
 			stat.setString(1, holidayFlag);
@@ -308,11 +297,92 @@ public class DatabaseConnection {
 			stat.setInt(3, userID);
 			stat.setInt(4, calendarID);
 			int updates = stat.executeUpdate();
-			if(updates >= 1) updated = true;
-		}catch(SQLException e){
+			if (updates >= 1)
+				updated = true;
+		} catch (SQLException e) {
 			e.getStackTrace();
 		}
 		return updated;
+	}
+
+	public boolean handlePlanHoliday(String idFrom, String idTo, int userID,
+			boolean isHoliday) {
+		boolean updated = false;
+		int updates = 0;
+		String holidayFlag = "";
+		PreparedStatement stat = null;
+		try {
+			if (isHoliday == true) {
+				holidayFlag = "t";
+			} else {
+				holidayFlag = "f";
+			}
+			if (idFrom.compareTo("") == 0 | idTo.compareTo("") == 0) {
+				String update = "UPDATE user_calendar SET holiday_flag = ? WHERE user_ref = ? AND calendar_dimension_ref = ?";
+				stat = sql.getConn().prepareStatement(update);
+				stat.setString(1, holidayFlag);
+				stat.setInt(2, userID);
+				if (idFrom.compareTo("") == 0)
+					stat.setInt(3, Integer.parseInt(idTo));
+				if (idTo.compareTo("") == 0)
+					stat.setInt(3, Integer.parseInt(idFrom));
+			} else {
+				String update = "UPDATE user_calendar SET holiday_flag = ? WHERE user_ref = ? AND calendar_dimension_ref >= ? AND calendar_dimension_ref <= ?";
+				stat = sql.getConn().prepareStatement(update);
+				stat.setString(1, holidayFlag);
+				stat.setInt(2, userID);
+				stat.setInt(3, Integer.parseInt(idFrom));
+				stat.setInt(4, Integer.parseInt(idTo));
+			}
+			if (stat != null) {
+				updates = stat.executeUpdate();
+			}
+
+			if (updates >= 1)
+				updated = true;
+		} catch (SQLException e) {
+			e.getStackTrace();
+		}
+		return updated;
+	}
+
+	public ObservableList<Time> handleAnalyzeCategory(String idFrom, String idTo, int userID) {
+		PreparedStatement stat = null;
+		ResultSet results = null;
+		ObservableList<Time> times = FXCollections.observableArrayList();
+		try {
+			if (idFrom.compareTo("") == 0 | idTo.compareTo("") == 0) {
+				String update = "SELECT td.id AS time_dimension_id , start_time , end_time , total_time , note , user_calendar_calendar_dimension_ref as dateID , c.name as category FROM time_dimension td LEFT JOIN category c on c.id = td.category_ref AND c.user_ref = td.user_calendar_user_ref WHERE user_calendar_user_ref = ? AND user_calendar_calendar_dimension_ref = ?";
+				stat = sql.getConn().prepareStatement(update);
+				stat.setInt(1, userID);
+				if(idFrom.compareTo("") == 0) stat.setInt(2, Integer.parseInt(idTo));
+				if(idTo.compareTo("") == 0) stat.setInt(2, Integer.parseInt(idFrom));
+			} else {
+				String update = "SELECT td.id AS time_dimension_id , start_time , end_time , total_time , note , user_calendar_calendar_dimension_ref as dateID , c.name as category FROM time_dimension td LEFT JOIN category c on c.id = td.category_ref AND c.user_ref = td.user_calendar_user_ref WHERE user_calendar_user_ref = ? AND user_calendar_calendar_dimension_ref >= ? AND user_calendar_calendar_dimension_ref <= ?";
+				stat = sql.getConn().prepareStatement(update);
+				stat.setInt(1, userID);
+				stat.setInt(2, Integer.parseInt(idFrom));
+				stat.setInt(3, Integer.parseInt(idTo));
+			}
+			if (stat != null) {
+				results = stat.executeQuery();
+			}
+			if(results != null){
+				while(results.next()){
+					String dateID = results.getString("dateID");
+					String year = (String) dateID.subSequence(0, 3);
+					String month = (String) dateID.subSequence(4, 5);
+					String day = (String) dateID.subSequence(6, 7);
+					String dateTime = day + "." + month + "." + year;
+					Time newTime = getTime(results, dateTime, dateID);
+					times.add(newTime);
+				}
+			}
+
+		} catch (SQLException e) {
+			e.getStackTrace();
+		}
+		return times;
 	}
 
 	public int getUserID(String dbuserName) {
@@ -330,5 +400,56 @@ public class DatabaseConnection {
 
 		}
 		return userID;
+	}
+
+	private Time getTime(ResultSet result, String dateTime, String dateID) {
+		timey.controller.model.Time time = null;
+		java.sql.Time startTime;
+		try {
+			startTime = result.getTime("start_time");
+			java.sql.Time endTime = result.getTime("end_time");
+			Double totalTime = result.getDouble("total_time");
+			String category = result.getString("category");
+			String note = result.getString("note");
+
+			int timeID = result.getInt("time_dimension_id");
+			if (startTime != null | endTime != null) {
+
+				LocalTime startLocalTime = LocalTime.of(startTime.getHours(),
+						startTime.getMinutes());
+				LocalTime endLocalTime = LocalTime.of(endTime.getHours(),
+						endTime.getMinutes());
+				time = new Time(dateTime, startLocalTime, endLocalTime,
+						totalTime, category, note, Integer.parseInt(dateID),
+						timeID);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return time;
+	}
+	public int countDays(String idFrom, String idTo){
+		int count = 0;
+		if(idFrom.compareTo("") == 0 & idTo.compareTo("") != 0) return 1;
+		if(idTo.compareTo("") == 0 & idFrom.compareTo("") != 0) return 1;
+		if(idFrom.compareTo("") != 0 & idFrom.compareTo("") != 0){
+			
+			try {
+				String query = "SELECT COUNT(id) AS count FROM calendar_dimension WHERE id >= ? AND id <= ?";
+				PreparedStatement stat = sql.getConn().prepareStatement(query);
+				stat.setInt(1, Integer.parseInt(idFrom));
+				stat.setInt(2, Integer.parseInt(idTo));
+				ResultSet result =  stat.executeQuery();
+				while (result.next()){
+					count = Integer.parseInt(result.getString("count"));
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return count;
+		
 	}
 }

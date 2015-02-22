@@ -7,8 +7,8 @@
 
 <AnchorPane id="rootLayout" prefHeight="200.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="timey.controller.view.CategoryEditDialogController">
    <children>
-      <ComboBox fx:id="categoryCombo" layoutX="75.0" layoutY="49.0" prefWidth="150.0" />
-      <Label layoutX="75.0" layoutY="100.0" text="New Entry" />
+      <ComboBox fx:id="categoryCombo" layoutX="75.0" layoutY="49.0" prefWidth="150.0" promptText="Choose a Category" />
+      <Label layoutX="75.0" layoutY="100.0" text="New Category Name" />
       <TextField fx:id="categoryField" layoutX="76.0" layoutY="118.0" />
       <Button layoutX="75.0" layoutY="161.0" mnemonicParsing="false" onAction="#handleOK" text="OK" />
       <Button layoutX="173.0" layoutY="162.0" mnemonicParsing="false" onAction="#handleCancel" text="Cancel" />

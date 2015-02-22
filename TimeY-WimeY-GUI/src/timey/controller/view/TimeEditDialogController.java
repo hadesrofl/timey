@@ -1,6 +1,6 @@
 package timey.controller.view;
 
-import java.time.LocalTime;
+import timey.controller.MainApp;
 
 import org.controlsfx.dialog.Dialogs;
 
@@ -34,6 +34,10 @@ public class TimeEditDialogController {
 	private Date date;
 	private Time time;
 	private boolean okClicked = false;
+	private boolean changed = false;
+	private MainApp mainApp;
+	private ObservableList<String> categoriesData = FXCollections
+			.observableArrayList();
 
 	@FXML
 	private void initialize() {
@@ -44,19 +48,29 @@ public class TimeEditDialogController {
 		this.dialogStage = dialogStage;
 	}
 
+	public void setMainApp(MainApp main) {
+		this.mainApp = main;
+	}
+
 	public void setDate(Date date, Time time) {
 		this.date = date;
 		this.time = time;
 		dateLabel.setText(date.getCompleteDate());
 		totalTimeLabel.setText("");
-		ObservableList<String> categoriesData = FXCollections.observableArrayList();
+		categoriesData = mainApp.getDBConn().getCategories(mainApp.getUserID());
 		categoryCombo.setItems(categoriesData);
+
 
 		// Edit Time
 		if (time != null) {
 			startTimeField.setText(time.getStartTime() + "");
 			endTimeField.setText(time.getEndTime() + "");
 			totalTimeLabel.setText(time.getTotalTime() + "");
+			for(int i = 0; i < categoriesData.size(); i++){
+				if(time.getCategory().compareTo(categoriesData.get(i)) == 0){
+					categoryCombo.getSelectionModel().select(i);
+				}
+			}
 			if (time.getNote() != null) {
 				noteField.setText(time.getNote());
 			} else {
@@ -69,29 +83,27 @@ public class TimeEditDialogController {
 	public boolean isOkClicked() {
 		return okClicked;
 	}
+	
+	public boolean isSomethingChanged(){
+		return changed;
+	}
 
 	@FXML
 	private void handleOK() {
 		String[] startTime = startTimeField.getText().split(":");
 		String[] endTime = endTimeField.getText().split(":");
-		if (time == null) {
-			Time newTime = new Time(date.getCompleteDate(), LocalTime.of(
-					Integer.parseInt(startTime[0]),
-					Integer.parseInt(startTime[1])),
-					LocalTime.of(Integer.parseInt(endTime[0]),
-							Integer.parseInt(endTime[1])),
-					Double.parseDouble(totalTimeLabel.getText()),
-					categoryCombo.getSelectionModel().getSelectedItem(), noteField.getText(),
-					date.getCalendarID());
-			date.getTimes().add(newTime);
-		}else{
-			time.setStartTime(LocalTime.of(Integer.parseInt(startTime[0]), Integer.parseInt(startTime[1])));
-			time.setEndTime(LocalTime.of(Integer.parseInt(endTime[0]), Integer.parseInt(endTime[1])));
-			time.setTotalTime(Double.parseDouble(totalTimeLabel.getText()));
-			time.setCategory(categoryCombo.getSelectionModel().getSelectedItem());
-			time.setNote(noteField.getText());
-		}
+		String startTimeQuery = startTime[0] + ":" + startTime[1];
+		String endTimeQuery = endTime[0] + ":" + endTime[1];
+
+		int categoryID = mainApp.getDBConn().getCategoryID(mainApp.getUserID(),
+				categoryCombo.getSelectionModel().getSelectedItem());
+		
+		changed = mainApp.getDBConn().handleEditTime(time, mainApp.getUserID(),
+				startTimeQuery, endTimeQuery, totalTimeLabel.getText(),
+				noteField.getText(), date.getCalendarID(), categoryID);
+		
 		okClicked = true;
+		
 		dialogStage.close();
 	}
 
@@ -111,13 +123,14 @@ public class TimeEditDialogController {
 			double endHour = Double.parseDouble(endTime[0]);
 			double endMinutes = Double.parseDouble(endTime[1]);
 			double diffHours = 0;
-			if(endHour < startHour){
+			if (endHour < startHour) {
 				diffHours = (24 - startHour) + endHour;
-			}else{
+			} else {
 				diffHours = endHour - startHour;
 			}
 			double diffMinutes = endMinutes - startMinutes;
-			double totalTime = Math.round(100*((diffHours * 60) + diffMinutes) / 60);
+			double totalTime = Math
+					.round(100 * ((diffHours * 60) + diffMinutes) / 60);
 			totalTime = totalTime / 100;
 			totalTimeLabel.setText(String.valueOf(totalTime));
 		} else {
@@ -128,24 +141,20 @@ public class TimeEditDialogController {
 					.showWarning();
 		}
 	}
-	
-	private void setFocusListenerToTextField(TextField textField){
-		textField.focusedProperty().addListener(new ChangeListener<Boolean>()
-		{
-		    @Override
-		    public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue)
-		    {
-		        if (newPropertyValue)
-		        {
-		            System.out.println("Textfield on focus");
 
-		        }
-		        else
-		        {
-		            System.out.println("Textfield out focus");
-		            totalTimeCalculation();
-		        }
-		    }
+	private void setFocusListenerToTextField(TextField textField) {
+		textField.focusedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> arg0,
+					Boolean oldPropertyValue, Boolean newPropertyValue) {
+				if (newPropertyValue) {
+					System.out.println("Textfield on focus");
+
+				} else {
+					System.out.println("Textfield out focus");
+					totalTimeCalculation();
+				}
+			}
 		});
 	}
 }

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="ASCII"?>
 <anttasks:AntTask xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:anttasks="http://org.eclipse.fx.ide.jdt/1.0" buildDirectory="${project}/build">
-  <deploy>
-    <application name="Timey_GUI"/>
-    <info/>
+  <deploy splashImage="timey/controller/icon.png" packagingFormat="all">
+    <application name="Timey_GUI" mainclass="timey.controller.MainApp" version="0.5" toolkit="fx"/>
+    <info title="TimeY-WimeY" vendor="TimeY-WimeY"/>
   </deploy>
   <signjar/>
 </anttasks:AntTask>

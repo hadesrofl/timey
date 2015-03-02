@@ -15,14 +15,10 @@ This is my TimeTracker-App. It's primary purpose was to track my Time at my univ
 
 ### Next Steps:
 
-* Adding feature to analyze Total Time used on specific categories per period
-* Using a GUI written with JavaFX
+* Switching between Localhost / Remotehost
+* Multi-User Support
 
 ### Steps in the Future:
 
-* Switching between Localhost / Remotehost
-* Saving Data per database or XML
-* CSV export
-* Multi-User Support
 * Android app
 * Web based

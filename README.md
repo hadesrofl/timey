@@ -6,6 +6,8 @@ This is my TimeTracker-App. It's primary purpose was to track my Time at my univ
 * How is its structure?`
 * etc. etc.
 
+<b>Current Version : 0.6</b>
+
 =======
 ## Features
 

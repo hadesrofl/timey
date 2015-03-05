@@ -6,8 +6,14 @@ This is my TimeTracker-App. It's primary purpose was to track my Time at my univ
 * How is its structure?`
 * etc. etc.
 
+<<<<<<< HEAD
 **Current Version: 0.6**
 
+=======
+<b>Current Version : 0.6</b>
+
+=======
+>>>>>>> cdb45feb5f732c74b1f8c5e856406f6a8d2cf383
 ## Features
 
 ![Project MindMap](http://kerberos-grube.de/img/TimeY-WimeY-Mindmap.png)

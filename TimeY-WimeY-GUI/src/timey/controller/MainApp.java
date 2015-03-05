@@ -31,41 +31,110 @@ import timey.controller.view.ServerLoginDialogController;
 import timey.controller.view.TimeEditDialogController;
 import timey.controller.model.DatabaseConnection;
 
+/**
+ * 
+ * 
+ * <b>Project:</b> TimeY-WimeY-GUI
+ * <p>
+ * <b>Packages:</b> timey.controller
+ * </p>
+ * <p>
+ * <b>File:</b> MainApp.java
+ * </p>
+ * <p>
+ * <b>last update:</b> 05.03.2015
+ * </p>
+ * <p>
+ * <b>Time:</b> 10:44:58
+ * </p>
+ * <b>Description:</b>
+ * <p>
+ * TimeY-WimeY is a Time Tracker developed for private purposes and training in
+ * JavaFX. The app offers a GUI and a connection to a remote SQL Database to
+ * store the Dates and Times of a user. The Main App is the controller of this
+ * app.
+ * </p>
+ * <p>
+ * Copyright (c) 2015 by Rene Kremer
+ * </p>
+ * 
+ * @author Rene Kremer
+ * @version 0.6
+ */
 public class MainApp extends Application {
+	/**
+	 * primary stage to show the scenes in
+	 */
 	private Stage primaryStage;
+	/**
+	 * root pane of the gui
+	 */
 	private BorderPane rootLayout;
+	/**
+	 * connection to the remote sql database
+	 */
 	private static DatabaseConnection dbConn;
+	/**
+	 * user id of the current active user of this app
+	 */
 	private int userID;
+	/**
+	 * loader for fxml files for the gui
+	 */
 	private FXMLLoader dateViewLoader;
+	/**
+	 * main frame of the gui
+	 */
 	private Pane dateView;
+	/**
+	 * controller of the main view
+	 */
 	private DateViewController controller;
-	// private File f = new File(File.separator + "resources" + File.separator +
-	// "style.css");
+	/**
+	 * path to style sheet
+	 */
 	private String cssScene = this.getClass().getResource("style.css")
 			.toExternalForm();
-	// private String css = "style.css";
-	// private String css = System.getProperty("user.dir") + File.separator +
-	// "resources" + File.separator + "style.css";
+	/**
+	 * path to the configuration file of the remote connection to database TODO:
+	 * Hash password
+	 */
 	private File config = new File(System.getProperty("user.dir")
 			+ File.separator + "config" + File.separator + "config.txt");
 
+	/**
+	 * Constructor
+	 */
 	public MainApp() {
 
 	}
 
+	/**
+	 * start method for creating a stage with root pane. Also reads the config
+	 * file or shows a dialog to enter new login details. Deletes the config
+	 * file if there is an exception connecting to the database.
+	 */
 	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
 		this.primaryStage.setTitle("TimeY");
 		boolean okClicked = false;
 		if (config.exists()) {
 			boolean configRead = readConfig();
-			if(configRead == true){
+			// connection established
+			if (configRead == true) {
 				initRootLayout();
 				showDateView(null, null, 0);
-			}else{
+
+			}
+			// connection not possible
+			else {
+				config.delete();
 				Platform.exit();
 			}
-		} else {
+
+		}
+		// there is no configuration file
+		else {
 			okClicked = showServerLoginDialog();
 			if (okClicked == true) {
 				okClicked = showDatabaseLoginDialog();
@@ -78,6 +147,13 @@ public class MainApp extends Application {
 		}
 	}
 
+	/**
+	 * Main Method to launch the gui and stop the database connection if the
+	 * programm will be closed
+	 * 
+	 * @param args
+	 *            is not used
+	 */
 	public static void main(String[] args) {
 		launch(args);
 		if (dbConn != null) {
@@ -86,6 +162,12 @@ public class MainApp extends Application {
 
 	}
 
+	/**
+	 * Reads the config file and return true if a connection to the database
+	 * could be established or false if not
+	 * 
+	 * @return true if connection is established, false if not
+	 */
 	private boolean readConfig() {
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(config));
@@ -108,6 +190,9 @@ public class MainApp extends Application {
 		}
 	}
 
+	/**
+	 * Initializes the root pane
+	 */
 	public void initRootLayout() {
 		try {
 			// Load the RootLayout from fxml file
@@ -129,6 +214,16 @@ public class MainApp extends Application {
 		}
 	}
 
+	/**
+	 * Shows the DateView Scene
+	 * 
+	 * @param toPickerValue
+	 *            is the value of the date picker for the end date
+	 * @param fromPickerValue
+	 *            is the value of the date picker for the start date
+	 * @param selectIndex
+	 *            is the index in the date table
+	 */
 	public void showDateView(LocalDate toPickerValue,
 			LocalDate fromPickerValue, int selectIndex) {
 		try {
@@ -148,12 +243,29 @@ public class MainApp extends Application {
 		}
 	}
 
+	/**
+	 * Refreshes the date view scene
+	 * 
+	 * @param toPickerValue
+	 *            is the value of the date picker for the end date
+	 * @param fromPickerValue
+	 *            is the value of the date picker for the start date
+	 * @param selectIndex
+	 *            is the index of the selected date
+	 */
 	public void refreshDateView(LocalDate toPickerValue,
 			LocalDate fromPickerValue, int selectIndex) {
 		showDateView(toPickerValue, fromPickerValue, selectIndex);
 
 	}
 
+	/**
+	 * Shows the DateEdit Dialog
+	 * 
+	 * @param date
+	 *            is the date that shall be edited
+	 * @return true if there was an update, false if not
+	 */
 	public boolean showDateEditDialog(Date date) {
 		try {
 			FXMLLoader loader = new FXMLLoader();
@@ -167,7 +279,8 @@ public class MainApp extends Application {
 			dialogStage.setTitle("Edit Date");
 			dialogStage.initModality(Modality.WINDOW_MODAL);
 			dialogStage.initOwner(primaryStage);
-			dialogStage.getIcons().add(new Image(MainApp.class.getResourceAsStream("icon.png")));
+			dialogStage.getIcons().add(
+					new Image(MainApp.class.getResourceAsStream("icon.png")));
 			Scene scene = new Scene(page);
 			scene.getStylesheets().add(cssScene);
 			dialogStage.setScene(scene);
@@ -190,6 +303,15 @@ public class MainApp extends Application {
 
 	}
 
+	/**
+	 * Shows the TimeEditDialog
+	 * 
+	 * @param date
+	 *            is the date which contains the time
+	 * @param time
+	 *            is the time that shall be edited
+	 * @return true if there was a change, false if not
+	 */
 	public boolean showTimeEditDialog(Date date, Time time) {
 		try {
 			FXMLLoader loader = new FXMLLoader();
@@ -203,7 +325,8 @@ public class MainApp extends Application {
 			dialogStage.setTitle("Edit Time");
 			dialogStage.initModality(Modality.WINDOW_MODAL);
 			dialogStage.initOwner(primaryStage);
-			dialogStage.getIcons().add(new Image(MainApp.class.getResourceAsStream("icon.png")));
+			dialogStage.getIcons().add(
+					new Image(MainApp.class.getResourceAsStream("icon.png")));
 			Scene scene = new Scene(page);
 			scene.getStylesheets().add(cssScene);
 			dialogStage.setScene(scene);
@@ -226,6 +349,13 @@ public class MainApp extends Application {
 
 	}
 
+	/**
+	 * Shows the CategoryEdit Dialog
+	 * 
+	 * @param newCategory
+	 *            is the category which shall be edited
+	 * @return true if there was an update, false if not
+	 */
 	public boolean showCategoryEditDialog(boolean newCategory) {
 		try {
 			FXMLLoader loader = new FXMLLoader();
@@ -236,7 +366,8 @@ public class MainApp extends Application {
 			// Create DiagloStage
 			Stage dialogStage = new Stage();
 			dialogStage.getStyle().getClass().getResource(cssScene);
-			dialogStage.getIcons().add(new Image(MainApp.class.getResourceAsStream("icon.png")));
+			dialogStage.getIcons().add(
+					new Image(MainApp.class.getResourceAsStream("icon.png")));
 			if (newCategory) {
 				dialogStage.setTitle("New Category");
 			} else {
@@ -267,6 +398,11 @@ public class MainApp extends Application {
 
 	}
 
+	/**
+	 * Shows the CategoryRemoveDialog
+	 * 
+	 * @return true if the category was removed, false if not
+	 */
 	public boolean showCategoryRemoveDialog() {
 		try {
 			FXMLLoader loader = new FXMLLoader();
@@ -280,7 +416,8 @@ public class MainApp extends Application {
 			dialogStage.setTitle("Remove Category");
 			dialogStage.initModality(Modality.WINDOW_MODAL);
 			dialogStage.initOwner(primaryStage);
-			dialogStage.getIcons().add(new Image(MainApp.class.getResourceAsStream("icon.png")));
+			dialogStage.getIcons().add(
+					new Image(MainApp.class.getResourceAsStream("icon.png")));
 			Scene scene = new Scene(page);
 			scene.getStylesheets().add(cssScene);
 			dialogStage.setScene(scene);
@@ -302,7 +439,16 @@ public class MainApp extends Application {
 		}
 
 	}
-	
+
+	/**
+	 * Shows the PlanHolidayDialog
+	 * 
+	 * @param from
+	 *            is the start date
+	 * @param to
+	 *            is the end date
+	 * @return true if there were updates, false if not
+	 */
 	public boolean showPlanHolidayDialog(LocalDate from, LocalDate to) {
 		try {
 			FXMLLoader loader = new FXMLLoader();
@@ -313,8 +459,9 @@ public class MainApp extends Application {
 			// Create DiagloStage
 			Stage dialogStage = new Stage();
 			dialogStage.getStyle().getClass().getResource(cssScene);
-			dialogStage.getIcons().add(new Image(MainApp.class.getResourceAsStream("icon.png")));
-				dialogStage.setTitle("Plan Holidays");
+			dialogStage.getIcons().add(
+					new Image(MainApp.class.getResourceAsStream("icon.png")));
+			dialogStage.setTitle("Plan Holidays");
 
 			dialogStage.initModality(Modality.WINDOW_MODAL);
 			dialogStage.initOwner(primaryStage);
@@ -337,9 +484,17 @@ public class MainApp extends Application {
 			e.printStackTrace();
 			return false;
 		}
-		}
+	}
 
-	public boolean showAnalyzeCategoryDialog(LocalDate from, LocalDate to) {
+	/**
+	 * Shows the AnalyzeCategoryDialog
+	 * 
+	 * @param from
+	 *            is the start date
+	 * @param to
+	 *            is the end date
+	 */
+	public void showAnalyzeCategoryDialog(LocalDate from, LocalDate to) {
 		try {
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(MainApp.class
@@ -349,8 +504,9 @@ public class MainApp extends Application {
 			// Create DiagloStage
 			Stage dialogStage = new Stage();
 			dialogStage.getStyle().getClass().getResource(cssScene);
-			dialogStage.getIcons().add(new Image(MainApp.class.getResourceAsStream("icon.png")));
-				dialogStage.setTitle("Analyze Category");
+			dialogStage.getIcons().add(
+					new Image(MainApp.class.getResourceAsStream("icon.png")));
+			dialogStage.setTitle("Analyze Category");
 
 			dialogStage.initModality(Modality.WINDOW_MODAL);
 			dialogStage.initOwner(primaryStage);
@@ -367,14 +523,17 @@ public class MainApp extends Application {
 			// Show dialog and wait until user closes it
 			dialogStage.showAndWait();
 
-			return controller.isSomethingChanged();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return false;
 		}
-		}
+	}
 
+	/**
+	 * Shows the LoginDialog for the server details
+	 * 
+	 * @return true if ok is clicked, false if not
+	 */
 	public boolean showServerLoginDialog() {
 		try {
 			FXMLLoader loader = new FXMLLoader();
@@ -388,7 +547,8 @@ public class MainApp extends Application {
 			dialogStage.setTitle("Server Login");
 			dialogStage.initModality(Modality.WINDOW_MODAL);
 			dialogStage.initOwner(primaryStage);
-			dialogStage.getIcons().add(new Image(MainApp.class.getResourceAsStream("icon.png")));
+			dialogStage.getIcons().add(
+					new Image(MainApp.class.getResourceAsStream("icon.png")));
 			Scene scene = new Scene(page);
 			scene.getStylesheets().add(cssScene);
 			dialogStage.setScene(scene);
@@ -396,7 +556,6 @@ public class MainApp extends Application {
 			// Set the date into the controller
 			ServerLoginDialogController controller = loader.getController();
 			controller.setDialogStage(dialogStage);
-			controller.setMainApp(this);
 
 			// Show dialog and wait until user closes it
 			dialogStage.showAndWait();
@@ -409,6 +568,11 @@ public class MainApp extends Application {
 		}
 	}
 
+	/**
+	 * Shows the LoginDialog for the database details
+	 * 
+	 * @return true if ok is clicked, false if not
+	 */
 	public boolean showDatabaseLoginDialog() {
 		try {
 			FXMLLoader loader = new FXMLLoader();
@@ -422,7 +586,8 @@ public class MainApp extends Application {
 			dialogStage.setTitle("Database Login");
 			dialogStage.initModality(Modality.WINDOW_MODAL);
 			dialogStage.initOwner(primaryStage);
-			dialogStage.getIcons().add(new Image(MainApp.class.getResourceAsStream("icon.png")));
+			dialogStage.getIcons().add(
+					new Image(MainApp.class.getResourceAsStream("icon.png")));
 			Scene scene = new Scene(page);
 			scene.getStylesheets().add(cssScene);
 			dialogStage.setScene(scene);
@@ -443,29 +608,65 @@ public class MainApp extends Application {
 		}
 	}
 
+	/**
+	 * Getter for the primary stage
+	 * 
+	 * @return the primary stage
+	 */
 	public Stage getPrimaryStage() {
 		return primaryStage;
 	}
 
+	/**
+	 * Gets the Dates of the database
+	 * 
+	 * @param id1
+	 *            is the id of the start date
+	 * @param id2
+	 *            is the id of the end date
+	 * @param userID
+	 *            is the userID
+	 * @return a list of dates
+	 */
 	public ObservableList<Date> getDates(String id1, String id2, int userID) {
 		return dbConn.getDates(id1, id2, userID);
 	}
 
+	/**
+	 * Getter of the database connection
+	 * 
+	 * @return the database connection object
+	 */
 	public DatabaseConnection getDBConn() {
 		return dbConn;
 	}
 
+	/**
+	 * Getter of the user id of the current active user in this app
+	 * 
+	 * @return the user id as an integer
+	 */
 	public int getUserID() {
 		return userID;
 	}
-	public String createCalendarIDFromDatePicker(DatePicker datePicker){
+
+	/**
+	 * Creates a id of a date in the database from a value of a date picker
+	 * 
+	 * @param datePicker
+	 *            from which a id shall be created
+	 * @return a id of a date in the database as String
+	 */
+	public String createCalendarIDFromDatePicker(DatePicker datePicker) {
 		String id = "";
-		if(datePicker.getValue() != null){
+		if (datePicker.getValue() != null) {
 			String year = datePicker.getValue().getYear() + "";
 			String month = datePicker.getValue().getMonthValue() + "";
-			if(Integer.parseInt(month) < 10) month = 0 + month;
+			if (Integer.parseInt(month) < 10)
+				month = 0 + month;
 			String day = datePicker.getValue().getDayOfMonth() + "";
-			if(Integer.parseInt(day) < 10) day = 0 + day;
+			if (Integer.parseInt(day) < 10)
+				day = 0 + day;
 			id = year + month + day;
 		}
 		return id;
